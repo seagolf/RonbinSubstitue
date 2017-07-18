@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/local/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.40 scan initiated Sun Apr  9 00:25:16 2017 as: nmap -F -O -oX nmap-F-O-66-131-226-178.xml 66.131.226.178 -->
+<nmaprun scanner="nmap" args="nmap -F -O -oX nmap-F-O-66-131-226-178.xml 66.131.226.178" start="1491711916" startstr="Sun Apr  9 00:25:16 2017" version="7.40" xmloutputversion="1.04">
+    <scaninfo type="syn" protocol="tcp" numservices="100" services="7,9,13,21-23,25-26,37,53,79-81,88,106,110-111,113,119,135,139,143-144,179,199,389,427,443-445,465,513-515,543-544,548,554,587,631,646,873,990,993,995,1025-1029,1110,1433,1720,1723,1755,1900,2000-2001,2049,2121,2717,3000,3128,3306,3389,3986,4899,5000,5009,5051,5060,5101,5190,5357,5432,5631,5666,5800,5900,6000-6001,6646,7070,8000,8008-8009,8080-8081,8443,8888,9100,9999-10000,32768,49152-49157"/>
+    <verbose level="0"/>
+    <debugging level="0"/>
+    <host starttime="1491711916" endtime="1491711932"><status state="up" reason="echo-reply" reason_ttl="64"/>
+        <address addr="66.131.226.178" addrtype="ipv4"/>
+        <hostnames>
+            <hostname name="modemcable178.226-131-66.mc.videotron.ca" type="PTR"/>
+        </hostnames>
+        <ports><extraports state="closed" count="97">
+                <extrareasons reason="resets" count="97"/>
+            </extraports>
+            <port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="http" method="table" conf="3"/></port>
+            <port protocol="tcp" portid="443"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="https" method="table" conf="3"/></port>
+            <port protocol="tcp" portid="9100"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="jetdirect" method="table" conf="3"/></port>
+        </ports>
+        <os><portused state="open" proto="tcp" portid="80"/>
+            <portused state="closed" proto="tcp" portid="7"/>
+            <portused state="closed" proto="udp" portid="35578"/>
+            <osmatch name="OpenWrt (Linux 3.3)" accuracy="96" line="59028">
+                <osclass type="broadband router" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="96"><cpe>cpe:/o:linux:linux_kernel:3.3</cpe></osclass>
+            </osmatch>
+            <osmatch name="OpenWrt Kamikaze 7.09 (Linux 2.6.22)" accuracy="95" line="58536">
+                <osclass type="WAP" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="95"><cpe>cpe:/o:linux:linux_kernel:2.6.22</cpe></osclass>
+            </osmatch>
+            <osmatch name="Asus RT-N10 router or AXIS 211A Network Camera (Linux 2.6)" accuracy="95" line="44656">
+                <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="95"><cpe>cpe:/o:linux:linux_kernel:2.6</cpe></osclass>
+                <osclass type="WAP" vendor="Asus" osfamily="embedded" accuracy="95"><cpe>cpe:/h:asus:rt-n10</cpe></osclass>
+                <osclass type="webcam" vendor="AXIS" osfamily="embedded" accuracy="95"><cpe>cpe:/h:axis:211_network_camera</cpe></osclass>
+            </osmatch>
+            <osmatch name="Linux 2.6.18" accuracy="95" line="46700">
+                <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="95"><cpe>cpe:/o:linux:linux_kernel:2.6.18</cpe></osclass>
+            </osmatch>
+            <osmatch name="AXIS 211A Network Camera (Linux 2.6.20)" accuracy="95" line="58829">
+                <osclass type="webcam" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="95"><cpe>cpe:/o:linux:linux_kernel:2.6.20</cpe></osclass>
+                <osclass type="webcam" vendor="AXIS" osfamily="embedded" accuracy="95"><cpe>cpe:/h:axis:211a_network_camera</cpe></osclass>
+            </osmatch>
+            <osmatch name="Linux 2.6.16" accuracy="94" line="45482">
+                <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="94"><cpe>cpe:/o:linux:linux_kernel:2.6.16</cpe></osclass>
+            </osmatch>
+            <osmatch name="Linux 2.6.24" accuracy="94" line="49284">
+                <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="94"><cpe>cpe:/o:linux:linux_kernel:2.6.24</cpe></osclass>
+            </osmatch>
+            <osmatch name="OpenWrt (Linux 2.4.32)" accuracy="94" line="43895">
+                <osclass type="WAP" vendor="Linux" osfamily="Linux" osgen="2.4.X" accuracy="94"><cpe>cpe:/o:linux:linux_kernel:2.4.32</cpe></osclass>
+            </osmatch>
+            <osmatch name="OpenWrt White Russian 0.9 (Linux 2.4.30)" accuracy="94" line="44020">
+                <osclass type="WAP" vendor="Linux" osfamily="Linux" osgen="2.4.X" accuracy="94"><cpe>cpe:/o:linux:linux_kernel:2.4.30</cpe></osclass>
+            </osmatch>
+            <osmatch name="Rebranded surveillance DVR (Hikvision, Q-SEE, EYEsurv, A1Webcams, Foscam)" accuracy="94" line="64281">
+                <osclass type="specialized" vendor="Linux" osfamily="Linux" accuracy="94"><cpe>cpe:/o:linux:linux_kernel</cpe></osclass>
+            </osmatch>
+            <osfingerprint fingerprint="OS:SCAN(V=7.40%E=4%D=4/9%OT=80%CT=7%CU=35578%PV=N%DS=1%DC=I%G=Y%TM=58E9B7BC&#xa;OS:%P=x86_64-unknown-linux-gnu)SEQ(SP=103%GCD=1%ISR=10F%TI=Z%CI=Z%TS=U)SEQ(&#xa;OS:SP=103%GCD=1%ISR=10F%TI=Z%CI=Z%II=I%TS=U)OPS(O1=M5B4NNSNW5%O2=M5B4NNSNW5&#xa;OS:%O3=M5B4NW5%O4=M5B4NNSNW5%O5=M5B4NNSNW5%O6=M5B4NNS)WIN(W1=3908%W2=3908%W&#xa;OS:3=3908%W4=3908%W5=3908%W6=3908)ECN(R=Y%DF=Y%T=40%W=3908%O=M5B4NNSNW5%CC=&#xa;OS:N%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=&#xa;OS:40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0&#xa;OS:%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z&#xa;OS:%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=40%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G&#xa;OS:%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)&#xa;"/>
+        </os>
+        <distance value="1"/>
+        <tcpsequence index="259" difficulty="Good luck!" values="3E095FC3,87541934,EE8B17B0,6AD72060,DF65CDA8,B75B5EC0"/>
+        <ipidsequence class="All zeros" values="0,0,0,0,0,0"/>
+        <tcptssequence class="none returned (unsupported)"/>
+        <times srtt="14484" rttvar="5789" to="100000"/>
+    </host>
+    <runstats><finished time="1491711932" timestr="Sun Apr  9 00:25:32 2017" elapsed="16.14" summary="Nmap done at Sun Apr  9 00:25:32 2017; 1 IP address (1 host up) scanned in 16.14 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+    </runstats>
+</nmaprun>
+

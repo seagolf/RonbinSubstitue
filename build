@@ -1,0 +1,1 @@
+g++ -std=c++11  -o fake main.cpp  tinyxml2.cpp -lcurl
