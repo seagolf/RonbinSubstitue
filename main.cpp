@@ -74,8 +74,10 @@ int main(int argc, char *argv[])
     bool bExScan = false;
 
     //parse xml
+    
+    string userName(argv[4]);
 
-    for (int argvOffset=2; argvOffset < argc; argvOffset++)
+    for (int argvOffset=2; argvOffset < 4; argvOffset++)
     {
         if (strstr(argv[argvOffset], "in" ) != NULL)
         {
@@ -308,7 +310,10 @@ int main(int argc, char *argv[])
         }
 
         int tempIndex = 0;
+        string devRegJsonObj; 
         string jsonObj ("[");
+        if( bInScan)
+            devRegJsonObj.append ("[");
         for ( vector<ScanInfoT>::iterator it = scanInfo.begin(); it !=scanInfo.end(); it++)
         {
 
@@ -316,6 +321,42 @@ int main(int argc, char *argv[])
 
             cout << "index : " << tempIndex << endl;
             ScanInfoT tmpInfo = *it;
+
+            if (bInScan)
+            {
+                devRegJsonObj.append("{\"apMacAddr\": \"");
+                devRegJsonObj.append (gApMac);
+                devRegJsonObj.append ("\","); 
+
+                devRegJsonObj.append ("\"deviceMacAddr\": \"");
+                if(!tmpInfo.devMacAddr.empty())
+                    devRegJsonObj.append (tmpInfo.devMacAddr);
+                else
+                    devRegJsonObj.append (gApMac);
+                    
+                devRegJsonObj.append ("\",");
+
+                devRegJsonObj.append ("\"ip\": \"");
+                if(!tmpInfo.ipAddr.empty())
+                    devRegJsonObj.append (tmpInfo.ipAddr);
+                else
+                    devRegJsonObj.append ("unknown");
+                devRegJsonObj.append ("\",");
+
+                devRegJsonObj.append ("\"os\":\"");
+                if (!tmpInfo.hostOs.empty())
+                    devRegJsonObj.append (tmpInfo.hostOs);
+                else 
+                    devRegJsonObj.append ("unknown");
+                devRegJsonObj.append ("\",");
+
+                devRegJsonObj.append ("\"vendor\":\"");
+                if (!tmpInfo.vendor.empty())
+                    devRegJsonObj.append (tmpInfo.vendor);
+                else 
+                    devRegJsonObj.append ("unknown");
+                devRegJsonObj.append ("\"},");
+            }
 
             for ( vector <PortInfoT>::iterator itPort = tmpInfo.portInfo.begin(); itPort != tmpInfo.portInfo.end(); itPort++)
             {
@@ -347,6 +388,7 @@ int main(int argc, char *argv[])
                     jsonObj.append ("\"deviceMacAddr\": \"");
                     jsonObj.append (tmpInfo.devMacAddr);
                     jsonObj.append ("\",");
+
                 }
                 else if (bExScan)
                 {
@@ -377,8 +419,17 @@ int main(int argc, char *argv[])
                 jsonObj.append (tmpPortInfo.status);
                 jsonObj.append ("\"},");
             }
+            jsonObj.pop_back();
             jsonObj.append ("]");
         }
+
+        if (bInScan)
+        {
+
+            devRegJsonObj.pop_back();
+            devRegJsonObj.append("]");
+        }
+
 
         //register
         CURL *pCurl;
@@ -395,22 +446,25 @@ int main(int argc, char *argv[])
         
         string url;
         struct curl_slist *headers = NULL;
-        if (bUserRegisterStatus)
+        if (!bUserRegisterStatus)
         {
-            //regiseter AP and MacAddr
+            //regiseter {user,ApMacAddr}
             url = "http://60.205.212.99/squirrel/v1/users";
 
             cout << url << endl;
 
             string regJsonObj;
-            regJsonObj = "{\"userId\":\"hzspecTest\",\"password\":\"123456\",\"phoneNumber\":\"13912345678\",\"emailAddr\":\"nobody@hzspec.com\",\"apMacAddr\":\"";
+            regJsonObj = "{\"userId\":\"";
+            regJsonObj.append(userName);
+            regJsonObj.append("\",");
+            regJsonObj.append("\"password\":\"123456\",\"phoneNumber\":\"13812345678\",\"emailAddr\":\"nobody1@hzspec.com\",\"apMacAddr\":\"");
             //if(gApMac.c_str() != NULL) 
             {
                 regJsonObj.append(gApMac);
                 regJsonObj.append("\",");
                 regJsonObj.append("\"ip\":\"");
                 regJsonObj.append(wanIp);
-                regJsonObj.append("\"");
+                regJsonObj.append("\"}");
             }
 
             headers = curl_slist_append(headers, "Accept: application/json");
@@ -465,6 +519,65 @@ int main(int argc, char *argv[])
         }
 
 
+        if (bInScan)
+        {
+            //register devices
+
+            url = "http://60.205.212.99/squirrel/v1/devices/add_devices_to_user";
+            cout << url;
+            headers = NULL;
+            headers = curl_slist_append(headers, "Accept: application/json");
+            headers = curl_slist_append(headers, "Content-Type: application/json");
+            headers = curl_slist_append(headers, "charsets: utf-8");
+
+            curl_easy_setopt(pCurl, CURLOPT_HTTPHEADER, headers);
+            curl_easy_setopt(pCurl, CURLOPT_URL, url.c_str());
+            curl_easy_setopt(pCurl, CURLOPT_POST, 1L);
+            curl_easy_setopt(pCurl, CURLOPT_POSTFIELDS, devRegJsonObj.c_str()); 
+
+
+            //some servers don't like requests that are made without a user-agent field, so we provide one  
+            curl_easy_setopt(pCurl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+
+            res = curl_easy_perform(pCurl);
+
+            // check for errors
+            if(res != CURLE_OK)
+            {
+                cout<<"ERROR: curl_easy_perform failed" << curl_easy_strerror(res) << endl;
+            }
+            else
+            {
+                //Now, our chunk.memory points to a memory block that is chunk.size
+                //bytes big and contains the remote file.
+
+                if(CURLE_OK == res)
+                {
+                    long response_code;
+
+                    curl_easy_getinfo(pCurl, CURLINFO_RESPONSE_CODE, &response_code);
+
+                    if( response_code != 200)
+                    {
+                        cout <<" Error! response code:"  << (int) response_code << endl;
+                    }
+
+                    char *ct;
+                    //ask for the content-type  
+                    res = curl_easy_getinfo(pCurl, CURLINFO_CONTENT_TYPE, &ct);
+
+                    if((CURLE_OK == res) && ct)
+                    {
+                        {
+                            cout << "We received Content-Type:" <<  ct <<endl;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        sleep (2);
 
 
 
