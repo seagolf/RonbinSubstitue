@@ -1,18 +1,14 @@
-#include <cstring>                                                                                                                                                                                                 
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <mutex>
+#include <list>
 #include <vector>
+#include <algorithm>
 
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <netinet/in.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <curl/curl.h>
+#include <sys/stat.h>
 
 #include "tinyxml2.h"
 
@@ -42,11 +38,141 @@ typedef struct
     string scanTs;
 }ScanInfoT;
 
+typedef struct 
+{
+  char *memory;
+  size_t size;
+}MemoryStruct;
+
 bool getWanIpStub( string &wanIp)
 {
     wanIp = "66.131.226.178";
     return true;
 
+}
+
+bool HandleQueryResponse(MemoryStruct getResponse)
+{
+
+#ifdef DEBUG 
+    cout << getResponse.memory << endl;
+#endif
+
+    string response (getResponse.memory);
+
+    string typeString = "\"deviceType\"";
+    string devMacString ="\"deviceMacAddr\"";
+    list <string> whiteList;
+    list <string> grepList;
+    list <string> blackList;
+    while (!response.empty())
+    {
+        int typePos = 0;
+        int devMacPos = 0;
+        string devMac;
+        char type;
+
+        bool toWhiteList = false;
+        bool toGrepList = false;
+        typePos  = response.find(typeString.c_str());
+        if( typePos == string::npos)
+        {
+            break;
+        }
+        typePos += typeString.length() + 1; //1 for ':'  
+        type = response.at(typePos);
+
+        string subEntry = response.substr(0, typePos);
+
+        devMacPos = subEntry.find(devMacString.c_str());
+        devMacPos += devMacString.length() + 2; // 1 for '0', 1 for '"'
+
+        devMac = subEntry.substr(devMacPos, 17); // 2*6+5, 2*6 stands for 00, 5 stands for ':'
+
+        switch (type)
+        {
+            //IOT
+            case '3':
+                cout << "insert iot device: " << devMac  << " to white list"<< endl;
+
+                toWhiteList = true;
+                break;
+            case '1': //computer
+            case '2': //mobile
+            case '4': //camera
+            case '5': //others
+                cout << "insert device: " << devMac << "to grep list" << endl;
+                toGrepList = true;
+                break;
+            default :
+                cout << "device type" << type <<  endl;
+                cout << "not supported device type" << endl;
+                break;
+
+        
+        }
+        
+        
+        if (toWhiteList)
+        {
+
+            if (find(whiteList.begin(), whiteList.end(), devMac.c_str()) != whiteList.end())
+            {
+                cout << "device " << devMac << "already in the list" <<endl; 
+            }
+
+            else
+            {
+                cout << " add device " << devMac << " to the list done" << endl;
+                whiteList.push_back(devMac);
+
+            }
+        }
+        
+        else if (toGrepList)
+        {
+
+            if (find(grepList.begin(), grepList.end(), devMac.c_str()) != grepList.end())
+            {
+                cout << "device " << devMac << "already in the list" <<endl; 
+            }
+
+            else
+            {
+                cout << " add device " << devMac << " to the list done" << endl;
+                grepList.push_back(devMac);
+
+            }
+        }
+        
+        response.erase(0,typePos+1);
+
+    }
+    
+    return true;
+
+
+}
+
+
+static
+size_t DeviceTypeCallback(void *contents, size_t size, size_t nmemb, void *userp)                                                                        
+{
+  size_t realsize = size * nmemb;
+  MemoryStruct *mem = (MemoryStruct *)userp;
+
+  mem->memory = (char *) realloc(mem->memory, mem->size + realsize + 1);
+  if(mem->memory == NULL) {
+        /* out of memory! */
+        printf("not enough memory (realloc returned NULL)\n");
+        return 0;
+      }
+
+  memcpy(&(mem->memory[mem->size]), contents, realsize);
+  mem->size += realsize;
+  mem->memory[mem->size] = 0;
+
+  return realsize;
 }
 
 
@@ -591,7 +717,10 @@ int main(int argc, char *argv[])
             }
         }
 
+        curl_easy_cleanup(pCurl);
 
+
+        pCurl = curl_easy_init();
 
         //register devices
         cout << "register devices_to_usr" << endl;
@@ -654,6 +783,9 @@ int main(int argc, char *argv[])
             }
         }
 
+        curl_easy_cleanup(pCurl);
+
+        pCurl = curl_easy_init();
 
         sleep (2);
 
@@ -720,6 +852,9 @@ int main(int argc, char *argv[])
         }
 
 
+        curl_easy_cleanup(pCurl);
+
+        pCurl = curl_easy_init();
 
 
         cout << "register public services" << endl;
@@ -783,7 +918,110 @@ int main(int argc, char *argv[])
             }
         }
 
+        curl_easy_cleanup(pCurl);
+
+        pCurl = curl_easy_init();
+
+        //create and write ini.conf
+        ifstream robinConf("robin.conf");
+        if(!robinConf.is_open())
+        {
+            cout << "failed to open /var/www/robin.conf"<<endl;
+            return -1;
         
+        }
+
+        ofstream iniConf("ini.conf", ios_base::app);
+
+        if(!iniConf.is_open())   
+        {
+            cout << "failed to create /var/www/ini.conf"<<endl;
+            return -1;
+        }
+
+        //write ini.conf
+        iniConf << "BSSID=" << gApMac << endl;;
+        
+        iniConf << robinConf.rdbuf();
+
+        robinConf.close();
+        iniConf.close();
+
+
+        //get device type
+
+        string devicesUrl("http://60.205.212.99/ext/v1/router/devices?apMacAddress=");
+
+        for(int i = 0; i < 18; i+=3)
+        {   
+            string tmpString = gApMac.substr(i,2);
+            devicesUrl.append(tmpString);
+
+            if( i < 15) 
+            {
+                devicesUrl.append("%3A");    
+            }
+
+        }   
+
+        MemoryStruct getResponse;
+        getResponse.memory = (char*) malloc(1);  // will be grown as needed by the realloc above 
+        getResponse.size = 0;    // no data at this point 
+
+        headers = NULL;
+        headers = curl_slist_append(headers, "Accept: */*");
+
+#ifdef DEBUG
+        curl_slist_append(headers, "Authorization:");
+
+#endif
+
+        curl_easy_setopt(pCurl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(pCurl, CURLOPT_URL, devicesUrl.c_str());
+
+
+        //register callback                                                                                                                                       
+        curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, DeviceTypeCallback);
+        curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, (void *) &getResponse);
+
+        //some servers don't like requests that are made without a user-agent field, so we provide one  
+        curl_easy_setopt(pCurl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+
+        res = curl_easy_perform(pCurl);
+
+        // check for errors
+        if(res != CURLE_OK)
+        {
+            cout<<"ERROR: curl_easy_perform failed" << curl_easy_strerror(res) << endl;
+        }
+        else
+        {
+            //Now, our chunk.memory points to a memory block that is chunk.size
+            //bytes big and contains the remote file.
+
+            if(CURLE_OK == res)
+            {
+                long response_code;
+                curl_easy_getinfo(pCurl, CURLINFO_RESPONSE_CODE, &response_code);
+
+                if( response_code != 200)
+                {
+                    cout <<" Error! response code: " << (int) response_code << endl;
+                    return false;
+                }
+
+                char *ct;
+                //ask for the content-type  
+                res = curl_easy_getinfo(pCurl, CURLINFO_CONTENT_TYPE, &ct);
+
+                if((CURLE_OK == res) && ct)
+                {
+                    cout << "We received Content-Type: " << ct << endl;;
+                }
+            }
+            HandleQueryResponse (getResponse);
+        }
+     
         curl_easy_cleanup(pCurl);
 
         return 0;
