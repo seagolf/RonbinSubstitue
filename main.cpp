@@ -4,6 +4,8 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <chrono>
+
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -13,6 +15,7 @@
 #include "tinyxml2.h"
 
 using namespace std;
+using namespace std::chrono;
 using namespace tinyxml2;
 
 typedef struct
@@ -53,8 +56,9 @@ bool getWanIpStub( string &wanIp)
 
 bool HandleQueryResponse(MemoryStruct getResponse)
 {
+    bool needPopBack = false;
 
-#ifdef DEBUG 
+#ifdef DEBUG
     cout << getResponse.memory << endl;
 #endif
 
@@ -148,6 +152,65 @@ bool HandleQueryResponse(MemoryStruct getResponse)
         response.erase(0,typePos+1);
 
     }
+
+    ofstream deviceListConf("/var/www/device-list.conf");
+
+    if(!deviceListConf.is_open())
+    {
+        cout << "faild to create /var/www/device-list.conf" << endl;
+        return false;
+    }
+
+    string whiteListString = "white_list_mac=";
+    string grepListString = "grep_list_mac=";
+    string blackListString ="black_list_mac=";
+    for(list<string>::iterator it = whiteList.begin(); it != whiteList.end(); it++)
+    {
+        whiteListString += *it;
+        whiteListString += ",";
+        needPopBack = true;
+    }
+
+    if(needPopBack)
+    {
+        whiteListString.pop_back();
+        needPopBack = false;
+    }
+
+    for(list<string>::iterator it = grepList.begin(); it != grepList.end(); it++)
+    {
+        grepListString += *it;
+        grepListString += ",";
+        needPopBack = true;
+    }
+
+    if(needPopBack)
+    {
+        grepListString.pop_back();
+        needPopBack = false;
+    }
+
+    for(list<string>::iterator it = blackList.begin(); it != blackList.end(); it++)
+    {
+        blackListString += *it;
+        blackListString += ",";
+        needPopBack = true;
+    }
+
+    if(needPopBack)
+    {
+        blackListString.pop_back();
+        needPopBack = false;
+    }
+
+    deviceListConf << whiteListString;
+    deviceListConf << endl;
+    deviceListConf << grepListString;
+    deviceListConf << endl;
+    deviceListConf << blackListString;
+    deviceListConf << endl;
+
+    deviceListConf.close();
     
     return true;
 
@@ -923,7 +986,7 @@ int main(int argc, char *argv[])
         pCurl = curl_easy_init();
 
         //create and write ini.conf
-        ifstream robinConf("robin.conf");
+        ifstream robinConf("/var/www/robin.conf");
         if(!robinConf.is_open())
         {
             cout << "failed to open /var/www/robin.conf"<<endl;
@@ -931,7 +994,7 @@ int main(int argc, char *argv[])
         
         }
 
-        ofstream iniConf("ini.conf", ios_base::app);
+        ofstream iniConf("/var/www/ini.conf");
 
         if(!iniConf.is_open())   
         {
@@ -1023,6 +1086,17 @@ int main(int argc, char *argv[])
         }
      
         curl_easy_cleanup(pCurl);
+
+        //create notification.shepherd
+        
+        ofstream notification("/var/www/notification.shepherd");
+
+        milliseconds ms = duration_cast< milliseconds >( system_clock::now().time_since_epoch());
+        notification << ms.count() << endl;
+        
+
+
+
 
         return 0;
 
