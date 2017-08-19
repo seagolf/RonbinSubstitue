@@ -1,1 +1,1 @@
-g++ -std=c++11  -o fake main.cpp  tinyxml2.cpp -lcurl
+mips-linux-g++ -std=c++0x -o SecureClient_Robinbird main.cpp tinyxml2.cpp -I/home/liuw/workspace/hzspec/Repos/uclibc/buildroot-2017.05.2/output/host/usr/mips-buildroot-linux-uclibc/sysroot/usr/include -lcurl 

@@ -4,7 +4,6 @@
 #include <list>
 #include <vector>
 #include <algorithm>
-#include <chrono>
 
 
 #include <stdlib.h>
@@ -15,7 +14,6 @@
 #include "tinyxml2.h"
 
 using namespace std;
-using namespace std::chrono;
 using namespace tinyxml2;
 
 typedef struct
@@ -173,7 +171,7 @@ bool HandleQueryResponse(MemoryStruct getResponse)
 
     if(needPopBack)
     {
-        whiteListString.pop_back();
+        whiteListString.erase(whiteListString.end()-1);
         needPopBack = false;
     }
 
@@ -186,7 +184,7 @@ bool HandleQueryResponse(MemoryStruct getResponse)
 
     if(needPopBack)
     {
-        grepListString.pop_back();
+        grepListString.erase(grepListString.end()-1);
         needPopBack = false;
     }
 
@@ -199,7 +197,7 @@ bool HandleQueryResponse(MemoryStruct getResponse)
 
     if(needPopBack)
     {
-        blackListString.pop_back();
+        blackListString.erase(blackListString.end()-1);
         needPopBack = false;
     }
 
@@ -431,6 +429,7 @@ int main(int argc, char *argv[])
             if (strcmp(hostInfo.ipAddr.c_str(), argv[1]) == 0)
             {
                 gApMac = hostInfo.devMacAddr;
+                cout <<"ap　mac:" gApMac << endl;
             }
 
 
@@ -634,11 +633,11 @@ int main(int argc, char *argv[])
                     devSrvRegJsonObj.append ("\"},");
                 }
             }
-            devSrvRegJsonObj.pop_back();
+            devSrvRegJsonObj.erase(devSrvRegJsonObj.end()-1);
             devSrvRegJsonObj.append ("]");
 
 
-            devRegJsonObj.pop_back();
+            devRegJsonObj.erase(devRegJsonObj.end()-1);
             devRegJsonObj.append("]");
         }
 
@@ -701,7 +700,7 @@ int main(int argc, char *argv[])
                 }
             }
 
-            pubSrvRegJsonObj.pop_back();
+            pubSrvRegJsonObj.erase(pubSrvRegJsonObj.end()-1);
             pubSrvRegJsonObj.append ("]");
         
         }
@@ -1091,8 +1090,7 @@ int main(int argc, char *argv[])
         
         ofstream notification("/var/www/notification.shepherd");
 
-        milliseconds ms = duration_cast< milliseconds >( system_clock::now().time_since_epoch());
-        notification << ms.count() << endl;
+        notification << "notification"<< endl;
         
 
 

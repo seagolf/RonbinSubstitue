@@ -7,8 +7,8 @@
     <verbose level="0"/>
     <debugging level="0"/>
     <host starttime="1491700151" endtime="1491700212"><status state="up" reason="arp-response" reason_ttl="0"/>
-        <address addr="192.168.0.1" addrtype="ipv4"/>
-        <address addr="FC:F5:28:D4:81:AA" addrtype="mac" vendor="ZyXEL Communications"/>
+        <address addr="192.168.1.1" addrtype="ipv4"/>
+        <address addr="FC:F5:28:D4:81:AF" addrtype="mac" vendor="ZyXEL Communications"/>
         <hostnames>
             <hostname name="EMG2926.local" type="PTR"/>
         </hostnames>
@@ -68,7 +68,7 @@
     </host>
     <host starttime="1491700151" endtime="1491700199"><status state="up" reason="arp-response" reason_ttl="0"/>
         <address addr="192.168.0.105" addrtype="ipv4"/>
-        <address addr="E8:50:8B:83:19:E5" addrtype="mac" vendor="Samsung Electro-mechanics(thailand)"/>
+        <address addr="E8:50:8B:83:19:E7" addrtype="mac" vendor="Samsung Electro-mechanics(thailand)"/>
         <hostnames>
         </hostnames>
         <ports><extraports state="closed" count="100">
@@ -82,7 +82,7 @@
     </host>
     <host starttime="1491700151" endtime="1491700202"><status state="up" reason="arp-response" reason_ttl="0"/>
         <address addr="192.168.0.119" addrtype="ipv4"/>
-        <address addr="24:F0:94:0E:BB:87" addrtype="mac" vendor="Apple"/>
+        <address addr="24:F0:94:0E:BB:89" addrtype="mac" vendor="Apple"/>
         <hostnames>
         </hostnames>
         <ports><extraports state="closed" count="100">
@@ -97,7 +97,7 @@
     </host>
     <host starttime="1491700151" endtime="1491700202"><status state="up" reason="arp-response" reason_ttl="0"/>
         <address addr="192.168.0.153" addrtype="ipv4"/>
-        <address addr="C8:FF:28:6E:78:79" addrtype="mac" vendor="Liteon Technology"/>
+        <address addr="C8:FF:28:6E:78:7B" addrtype="mac" vendor="Liteon Technology"/>
         <hostnames>
         </hostnames>
         <ports><extraports state="filtered" count="95">
@@ -156,7 +156,7 @@
     </host>
     <host starttime="1491700151" endtime="1491700202"><status state="up" reason="arp-response" reason_ttl="0"/>
         <address addr="192.168.0.173" addrtype="ipv4"/>
-        <address addr="AC:BC:32:8F:43:35" addrtype="mac" vendor="Apple"/>
+        <address addr="AC:BC:32:8F:43:37" addrtype="mac" vendor="Apple"/>
         <hostnames>
         </hostnames>
         <ports><extraports state="filtered" count="100">
@@ -169,7 +169,7 @@
     </host>
     <host starttime="1491700151" endtime="1491700202"><status state="up" reason="arp-response" reason_ttl="0"/>
         <address addr="192.168.0.177" addrtype="ipv4"/>
-        <address addr="10:DA:43:76:92:3D" addrtype="mac" vendor="Netgear"/>
+        <address addr="10:DA:43:76:92:3F" addrtype="mac" vendor="Netgear"/>
         <hostnames>
         </hostnames>
         <ports><extraports state="filtered" count="100">
@@ -182,7 +182,7 @@
     </host>
     <host starttime="1491700151" endtime="1491700199"><status state="up" reason="arp-response" reason_ttl="0"/>
         <address addr="192.168.0.185" addrtype="ipv4"/>
-        <address addr="94:10:3E:32:30:F1" addrtype="mac" vendor="Belkin International"/>
+        <address addr="94:10:3E:32:30:F3" addrtype="mac" vendor="Belkin International"/>
         <hostnames>
         </hostnames>
         <ports><extraports state="closed" count="98">
